@@ -63,12 +63,13 @@ class g1(RlPipelineCfg): # Sim2Sim
     # ctrl: list[JoystickCtrlCfg | KeyboardCtrlCfg] = [  # note: the ranking of controllers matters
     ctrl: List[Union[JoystickCtrlCfg, KeyboardCtrlCfg]] = [
         JoystickCtrlCfg(),
-        # KeyboardCtrlCfg(),
+        KeyboardCtrlCfg(),
     ]
 
-    policy: G1UnitreePolicyCfg = G1UnitreePolicyCfg()
+    # policy: G1UnitreePolicyCfg = G1UnitreePolicyCfg()
     # policy: G1UnitreeWoGaitPolicyCfg = G1UnitreeWoGaitPolicyCfg()
     # policy: G1AmoPolicyCfg = G1AmoPolicyCfg()
+    policy: G1AsapLocoPolicyCfg = G1AsapLocoPolicyCfg()
 
     # run_fullspeed: bool = env.is_sim
 
@@ -131,7 +132,8 @@ class g1_real_loco_mimic(RlLocoMimicPipelineCfg): # Sim2Real
         ),
     ]
 
-    loco_policy: G1UnitreeWoGaitPolicyCfg = G1UnitreeWoGaitPolicyCfg()
+    # loco_policy: G1UnitreeWoGaitPolicyCfg = G1UnitreeWoGaitPolicyCfg()
+    loco_policy: G1AmoPolicyCfg = G1AmoPolicyCfg()
     mimic_policies: list[G1BeyondMimicPolicyCfg] = [
         G1BeyondMimicPolicyCfg(policy_name="g1_dance2", without_state_estimator=False, max_timestep=1000),
     ]
@@ -183,28 +185,71 @@ class g1_locomimic(RlLocoMimicPipelineCfg): # Sim2Sim
 
     # py3.10 -> py3.8
     # ctrl: list[KeyboardCtrlCfg | JoystickCtrlCfg] = [
-    ctrl: List[Union[KeyboardCtrlCfg, JoystickCtrlCfg]] = [
-        KeyboardCtrlCfg(
-            triggers_extra={
-                "i": "[SIM_REBORN]",
-                "o": "[SHUTDOWN]",
-                "]": "[POLICY_LOCO]",
-                "[": "[POLICY_MIMIC]",
-                ";": "[POLICY_SWITCH],NEXT",
-                "'": "[POLICY_SWITCH],LAST",
-            }
-        ),
+    
+    # ctrl: List[Union[KeyboardCtrlCfg, JoystickCtrlCfg]] = [
+    #     KeyboardCtrlCfg(
+    #         triggers_extra={
+    #             "i": "[SIM_REBORN]",
+    #             "o": "[SHUTDOWN]",
+    #             "]": "[POLICY_LOCO]",
+    #             "[": "[POLICY_MIMIC]",
+    #             ";": "[POLICY_SWITCH],NEXT",
+    #             "'": "[POLICY_SWITCH],LAST",
+    #         }
+    #     ),
+    #     JoystickCtrlCfg(
+    #         triggers_extra={
+    #             "RB+Down": "[POLICY_LOCO]",
+    #             "RB+Up": "[POLICY_MIMIC]",
+    #         }
+    #     ),
+    # ]
+
+    # ctrl: List[Union[UnitreeCtrlCfg, JoystickCtrlCfg]] = [
+    #     UnitreeCtrlCfg(),
+    #     JoystickCtrlCfg(
+    #         triggers_extra={
+    #             "RB+Down": "[POLICY_LOCO]",
+    #             "RB+Up": "[POLICY_MIMIC]",
+    #         }
+    #     # "A": "[SHUTDOWN]", # damping
+    #     # "X": "[MOTION_FADE_IN]",
+    #     # "B": "[MOTION_FADE_OUT]",
+    #     # "Y": "[MOTION_RESET]",
+    #     ),
+    # ]
+
+    ctrl: List[Union[JoystickCtrlCfg]] = [
         JoystickCtrlCfg(
             triggers_extra={
                 "RB+Down": "[POLICY_LOCO]",
                 "RB+Up": "[POLICY_MIMIC]",
+                "RB+Left": "[POLICY_SWITCH],LAST",
+                "RB+Right": "[POLICY_SWITCH],NEXT",
             }
+        # "A": "[SHUTDOWN]", # damping
+        # "X": "[MOTION_FADE_IN]",
+        # "B": "[MOTION_FADE_OUT]",
+        # "Y": "[MOTION_RESET]",
         ),
     ]
 
-    loco_policy: G1UnitreeWoGaitPolicyCfg = G1UnitreeWoGaitPolicyCfg()
+    # loco_policy: G1UnitreePolicyCfg = G1UnitreePolicyCfg()
+    # loco_policy: G1UnitreeWoGaitPolicyCfg = G1UnitreeWoGaitPolicyCfg()
+    loco_policy: G1AsapLocoPolicyCfg = G1AsapLocoPolicyCfg()
+
     mimic_policies: list[G1BeyondMimicPolicyCfg] = [
-        G1BeyondMimicPolicyCfg(policy_name="g1_dance2", without_state_estimator=False, max_timestep=1000),
+        # G1BeyondMimicPolicyCfg(policy_name="wave-single-2-lz", without_state_estimator=False, max_timestep=400),
+        # G1BeyondMimicPolicyCfg(policy_name="bow-shallow-2-lz", without_state_estimator=False, max_timestep=380),
+        # G1BeyondMimicPolicyCfg(policy_name="intro-facing-2-lz", without_state_estimator=False, max_timestep=300),
+        # G1BeyondMimicPolicyCfg(policy_name="bow-deep-2-lz", without_state_estimator=False, max_timestep=480),
+        G1BeyondMimicPolicyCfg(policy_name="junti_lz", without_state_estimator=False, max_timestep=5600),
+        
+        # G1BeyondMimicPolicyCfg(policy_name="g1_dance2", without_state_estimator=False, max_timestep=1000),
+        # G1BeyondMimicPolicyCfg(policy_name="kunkun_full", without_state_estimator=False, max_timestep=980),
+        # G1BeyondMimicPolicyCfg(policy_name="orangejustice", without_state_estimator=False, max_timestep=470),
+        # G1BeyondMimicPolicyCfg(policy_name="shadowlord", without_state_estimator=False, max_timestep=470),
+        # G1BeyondMimicPolicyCfg(policy_name="fistoffury", without_state_estimator=False, max_timestep=470),
     ]
 
 

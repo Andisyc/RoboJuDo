@@ -45,12 +45,20 @@ class G1_29AsapDoF(DoFConfig):
     ]
 
     default_pos: list[float] | None = [
+        # left leg: Hip [P, R, Y], Knee, Ankle [P, R]
         *[-0.1, 0.0, 0.0, 0.3, -0.2, 0.0],
-        *[-0.1, 0.0, 0.0, 0.3, -0.2, 0.0],
+
+        # right leg: Hip [P, R, Y], Knee, Ankle [P, R]
+        *[-0.1, 0.0, 0.02, 0.27, -0.2, 0.0],
+
+        # Waist: [Y, R, P]
         *[0.0, 0.0, 0.0],
+
+        # Left Arm: Shoulder [P, R, Y], Elbow, Wrist [R, P, Y]
         *[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        *[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-    ]
+
+        # Right Arm: Shoulder [P, R, Y], Elbow, Wrist [R, P, Y]
+        *[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]
 
     stiffness: list[float] | None = [
         *[100, 100, 100, 200, 20, 20],

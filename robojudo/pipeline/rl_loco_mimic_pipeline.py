@@ -199,9 +199,6 @@ class RlLocoMimicPipeline(RlMultiPolicyPipeline):
         env_class: type[Environment] = getattr(robojudo.environment, self.cfg.env.env_type)
         self.env: Environment = env_class(cfg_env=self.cfg.env, device=self.device)
 
-        print("\n")
-        print(f"RlLocoMimicPipeline: {self.device}")
-        print("\n")
         # temp = 1
         # assert temp == 2
 
@@ -250,15 +247,20 @@ class RlLocoMimicPipeline(RlMultiPolicyPipeline):
 
         # Handle policy CALLBACK
         for callback in extras.get("CALLBACK", []):
-            # match callback:
-                # case "[MOTION_DONE]":
+            match callback:
+                case "[MOTION_DONE]":
+                    if self.policy_locomotion_mimic_flag == 1:
+                        commands.append("[POLICY_LOCO]")
+                        logger.info("Mimic motion done, switch to locomotion policy.")
+            """
             if command == "[MOTION_DONE]":
                 if self.policy_locomotion_mimic_flag == 1:
                     commands.append("[POLICY_LOCO]")
                     logger.info("Mimic motion done, switch to locomotion policy.")
+            """
 
         for command in commands:
-            """
+            
             match command:
                 case "[SHUTDOWN]":
                     logger.warning("Emergency shutdown!")
@@ -279,8 +281,8 @@ class RlLocoMimicPipeline(RlMultiPolicyPipeline):
                 case "[POLICY_MIMIC]":
                     self.policy_locomotion_mimic_flag = 1
                     self.policy_manager.switch_to_mimic()
+            
             """
-
             if command == "[SHUTDOWN]":
                 logger.warning("Emergency shutdown!")
                 self.env.shutdown()
@@ -300,7 +302,7 @@ class RlLocoMimicPipeline(RlMultiPolicyPipeline):
             elif command == "[POLICY_MIMIC]":
                 self.policy_locomotion_mimic_flag = 1
                 self.policy_manager.switch_to_mimic()
-
+            """
         self.ctrl_manager.post_step_callback(ctrl_data)
 
         self.policy.post_step_callback(commands)
@@ -320,14 +322,14 @@ class RlLocoMimicPipeline(RlMultiPolicyPipeline):
                 timestep=self.timestep,)
 
     def step(self, dry_run=False):
-        import time
-        t0 = time.perf_counter()
+        # import time
+        # t0 = time.perf_counter()
 
         # update [dof, odo, FK, con]
         self.env.update()
 
         # 读取硬件状态耗时
-        t1 = time.perf_counter()
+        # t1 = time.perf_counter()
 
         # get proprioception
         env_data = self.env.get_data()
@@ -339,7 +341,7 @@ class RlLocoMimicPipeline(RlMultiPolicyPipeline):
             logger.info(f"{'=' * 10} COMMANDS {'=' * 10}\n{commands}")
 
         # 读取手柄/键盘输入耗时
-        t2 = time.perf_counter()
+        # t2 = time.perf_counter()
 
         # if current policy is loco
         if self.policy_manager.current_policy_id == self.policy_manager.policy_loco_id:
@@ -349,13 +351,13 @@ class RlLocoMimicPipeline(RlMultiPolicyPipeline):
         obs, extras = self.policy.get_observation(env_data, ctrl_data)
 
         # 构建观测量耗时
-        t3 = time.perf_counter()
+        # t3 = time.perf_counter()
 
         # forward propagation for PD signal
         pd_target = self.policy.get_pd_target(obs)
 
         # 推理耗时
-        t4 = time.perf_counter()
+        # t4 = time.perf_counter()
 
         # if current policy is loco
         if self.policy_manager.current_policy_id == self.policy_manager.policy_loco_id:
@@ -367,25 +369,25 @@ class RlLocoMimicPipeline(RlMultiPolicyPipeline):
             # logger.debug(pd_target)
         
         # 发送给电机耗时
-        t5 = time.perf_counter()
+        # t5 = time.perf_counter()
 
         # output callback info to terminal
         self.post_step_callback(env_data, ctrl_data, extras, pd_target)
 
         # 打印到控制台耗时
-        t6 = time.perf_counter()
+        # t6 = time.perf_counter()
 
         # === [新增] 打印详细耗时分析 ===
-        total_ms = (t6 - t0) * 1000
+        # total_ms = (t6 - t0) * 1000
         # 只有当总耗时超过 15ms 时才打印，避免刷屏 (目标是 20ms)
-        if total_ms > 15.0:
-            print(f"rl_loco_mimic Total: {total_ms:.2f}ms | " # 60 ~ 106 ms
-                  f"ReadEnv: {(t1-t0)*1000:.2f}ms | "         # 4 ~ 57 ms
-                  f"GetCtrl: {(t2-t1)*1000:.2f}ms | "         # 5 ~ 11 ms
-                  f"MakeObs: {(t3-t2)*1000:.2f}ms | "         # 11 ~ 32 ms
-                  f"Infer: {(t4-t3)*1000:.2f}ms | "           # 16 ~ 28 ms
-                  f"WriteEnv: {(t5-t4)*1000:.2f}ms | "        # 0.02 ~ 0.05 ms
-                  f"Post: {(t6-t5)*1000:.2f}ms")              # 0.22 ~ 0.35 ms
+        # if total_ms > 15.0:
+        #     print(f"rl_loco_mimic Total: {total_ms:.2f}ms | " # 60 ~ 106 ms
+        #           f"ReadEnv: {(t1-t0)*1000:.2f}ms | "         # 4 ~ 57 ms
+        #           f"GetCtrl: {(t2-t1)*1000:.2f}ms | "         # 5 ~ 11 ms
+        #           f"MakeObs: {(t3-t2)*1000:.2f}ms | "         # 11 ~ 32 ms
+        #           f"Infer: {(t4-t3)*1000:.2f}ms | "           # 16 ~ 28 ms
+        #           f"WriteEnv: {(t5-t4)*1000:.2f}ms | "        # 0.02 ~ 0.05 ms
+        #           f"Post: {(t6-t5)*1000:.2f}ms")              # 0.22 ~ 0.35 ms
 
     # invoke prepare() from RlPipeline
     def prepare(self):

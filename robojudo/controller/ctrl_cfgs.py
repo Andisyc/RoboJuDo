@@ -41,6 +41,8 @@ class JoystickCtrlCfg(CtrlCfg):
         "Y": "[MOTION_RESET]",
         # "LB": "[MOTION_LOAD_PREV]",
         # "RB": "[MOTION_LOAD_NEXT]",
+        # "X": "[MOTION_LOAD_PREV]",
+        # "B": "[MOTION_LOAD_NEXT]",
         # Note: combo keys supported: "LB+RB+A": "[TEST]",
     }
 

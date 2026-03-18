@@ -20,16 +20,17 @@ class PolicyCfg(Config):
 
     freq: int = 50  # control frequency (Hz)
 
+    # 定义观测和动作的关节
     obs_dof: DoFConfig
     action_dof: DoFConfig
 
     # action post processing
-    action_scale: float = 1.0
+    action_scale: float = 1.0 # 动作缩放系数
 
     # py3.10 -> py3.8
     # action_clip: float | None = None  # clip action to [-action_clip, action_clip]
-    action_clip: Optional[float] = None
-    action_beta: float = 1.0  # action smoothing factor
+    action_clip: Optional[float] = None # 动作限幅
+    action_beta: float = 1.0  # action smoothing factor 动作平滑系数
 
     # history settings
     history_length: int = 0  # number of history observations to use
@@ -60,10 +61,10 @@ class PolicyCfg(Config):
 
 class UnitreePolicyCfg(PolicyCfg):
     class ObsScalesCfg(Config):
-        dof_pos: float = 1.0
-        dof_vel: float = 0.05
-        ang_vel: float = 0.25
-        command: list[float] = [2.0, 2.0, 0.25]
+        dof_pos: float = 1.0  # 关节位置误差缩放值
+        dof_vel: float = 0.05 # 关节速度缩放值
+        ang_vel: float = 0.25 # 根节点角速度缩放值
+        command: list[float] = [2.0, 2.0, 0.25] # 指令缩放值
 
     policy_type: str = "UnitreePolicy"
     policy_name: str = "policy"
@@ -79,18 +80,20 @@ class UnitreePolicyCfg(PolicyCfg):
 
     # ======= POLICY SPECIFIC CONFIGURATION =======
     obs_scales: ObsScalesCfg = ObsScalesCfg()
-    max_cmd: list[float] = [0.8, 0.5, 1.57]
+    max_cmd: list[float] = [0.8, 0.5, 1.57] # 最大线速度(X, Y)和角速度(转身)
+
+    # 遥控器输入到指令方向的映射矩阵
     commands_map: list[list[float]] = [
-        [-1.0, 0.0, 1.0],
-        [1.0, 0.0, -1.0],
-        [1.0, 0.0, -1.0],
+        [-1.0, 0.0, 1.0], # X轴 (前进后退)
+        [1.0, 0.0, -1.0], # Y轴 (左右平移)
+        [1.0, 0.0, -1.0], # Yaw轴 (左右旋转)
     ]
 
 
 class UnitreeWoGaitPolicyCfg(PolicyCfg):
     class ObsScalesCfg(Config):
         ang_vel: float = 0.2
-        gravity: float = 1.0
+        gravity: float = 1.0 # 重力投影缩放值
         dof_pos: float = 1.0
         dof_vel: float = 0.05
         command: list[float] = [1.0, 1.0, 1.0]
@@ -112,7 +115,7 @@ class UnitreeWoGaitPolicyCfg(PolicyCfg):
 
     # ======= POLICY SPECIFIC CONFIGURATION =======
     obs_scales: ObsScalesCfg = ObsScalesCfg()
-    max_cmd: list[float] = [0.8, 0.5, 1.57]
+    max_cmd: list[float] = [0.8, 0.5, 1.57] # [0.4, 0.3, 1.0] # original: 
     commands_map: list[list[float]] = [
         [-1.0, 0.0, 1.0],
         [1.0, 0.0, -1.0],
