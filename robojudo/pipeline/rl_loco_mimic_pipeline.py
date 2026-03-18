@@ -199,11 +199,31 @@ class RlLocoMimicPipeline(RlMultiPolicyPipeline):
         env_class: type[Environment] = getattr(robojudo.environment, self.cfg.env.env_type)
         self.env: Environment = env_class(cfg_env=self.cfg.env, device=self.device)
 
+<<<<<<< HEAD
+=======
+        # print("\n")
+        # print(f"RlLocoMimicPipeline: {self.device}")
+        # print("\n")
+        # print(f"self.cfg.env: {self.cfg.env}")
+        # print("\n")
+        # print(f"self.env: {self.env}")
+        # print("\n")
+>>>>>>> d4c2905af0a1c0695278a5da9aef525c47e57f10
         # temp = 1
         # assert temp == 2
 
         # load in controller (keyboard or joystick)
         self.ctrl_manager = CtrlManager(cfg_ctrls=self.cfg.ctrl, env=self.env, device=self.device)
+
+        # print("\n")
+        # print(f"self.cfg.ctrl: {self.cfg.ctrl}")
+        # print("\n")
+        # print(f"self.ctrl_manager: {self.ctrl_manager}")
+        # print("\n")
+        # print(f"self.device: {self.device}")
+        # print("\n")
+        # temp = 1
+        # assert temp == 2
 
         # upper body override
         self.num_upper_body_dof = self.cfg.upper_dof_num
@@ -226,6 +246,12 @@ class RlLocoMimicPipeline(RlMultiPolicyPipeline):
             loco_dof_pos=self.loco_dof_pos,
             device=self.device,)
         
+        # print("\n")
+        # print(f"self.policy: {self.policy}")
+        # print("\n")
+        # temp = 1
+        # assert temp == 2
+        
         # load in dof_cfg & mujoco
         # (dummy & unitree visualizer=None)
         self.env.update_dof_cfg(override_cfg=self.policy.cfg_action_dof)
@@ -247,6 +273,7 @@ class RlLocoMimicPipeline(RlMultiPolicyPipeline):
 
         # Handle policy CALLBACK
         for callback in extras.get("CALLBACK", []):
+<<<<<<< HEAD
             match callback:
                 case "[MOTION_DONE]":
                     if self.policy_locomotion_mimic_flag == 1:
@@ -254,6 +281,11 @@ class RlLocoMimicPipeline(RlMultiPolicyPipeline):
                         logger.info("Mimic motion done, switch to locomotion policy.")
             """
             if command == "[MOTION_DONE]":
+=======
+            # match callback:
+                # case "[MOTION_DONE]":
+            if commands == "[MOTION_DONE]":
+>>>>>>> d4c2905af0a1c0695278a5da9aef525c47e57f10
                 if self.policy_locomotion_mimic_flag == 1:
                     commands.append("[POLICY_LOCO]")
                     logger.info("Mimic motion done, switch to locomotion policy.")
