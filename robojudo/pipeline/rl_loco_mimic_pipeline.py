@@ -350,7 +350,52 @@ class RlLocoMimicPipeline(RlMultiPolicyPipeline):
 
         # if current policy is loco
         if self.policy_manager.current_policy_id == self.policy_manager.policy_loco_id:
+            # === [终极方案: 动态锚点过渡 (Dynamic Default Pos)] ===
+            # 尝试获取当前的前向速度指令 v_x
+            v_x = 0.0
+            if "cmd" in ctrl_data:
+                v_x = float(ctrl_data["cmd"][0])
+            elif "command" in ctrl_data:
+                v_x = float(ctrl_data["command"][0])
+
+            # 定义右腿 Hip Pitch 的静态(原地)值和动态(快走)值
+            # 注意：这需要与你 cfg 中的 default_pos 对应
+            static_right_pitch = -0.08  # 你测出的原地完美值
+            dynamic_right_pitch = -0.10 # 官方原版对称值 (释放步幅)
+
+            # 计算混合比例 blend (0.0 到 1.0)
+            # 假设 v_x 超过 0.5 m/s 时，完全恢复到对称状态
+            blend = min(abs(v_x) / 0.5, 1.0) 
+
+            # 动态计算当前的 Right Hip Pitch
+            current_right_pitch = (1 - blend) * static_right_pitch + blend * dynamic_right_pitch
+
+            # 注入到 override_dof_pos 中 (根据 asap 顺序，右腿 Hip Pitch 是第 6 个元素)
+            self.policy_manager.override_dof_pos[6] = current_right_pitch
+            # =====================================================
+
             ctrl_data["ref_dof_pos"] = self.policy.obs_adapter.fit(self.policy_manager.override_dof_pos)
+        
+            # === [新增] 动态前馈指令补偿 (解决长时间漂移) ===
+            # # 注意: 假设你的速度指令存放在 ctrl_data["cmd"] 中。
+            # # 如果你的 CtrlManager 使用了其他 key (如 "command")，请替换。
+            # if "cmd" in ctrl_data:
+            #     # 提取当前手柄下发的 v_x (前后), v_y (左右), cmd_yaw (旋转)
+            #     v_x = float(ctrl_data["cmd"][0])
+            #     v_y = float(ctrl_data["cmd"][1])
+            #     cmd_yaw = float(ctrl_data["cmd"][2])
+
+            #     # 场景 1: 原地踏步 (摇杆全回中)
+            #     # 现象: 缓慢左转 -> 策略: 偷偷下发一个微弱的右转指令 (-0.02)
+            #     if abs(v_x) < 0.05 and abs(v_y) < 0.05 and abs(cmd_yaw) < 0.05:
+            #         ctrl_data["cmd"][2] -= 0.02  
+                
+            #     # 场景 2: 向前推杆行走
+            #     # 现象: 速度越快，向右偏得越厉害 -> 策略: 随速度线性增加左转补偿
+            #     elif v_x > 0.1:
+            #         yaw_comp_factor = 0.3 # 补偿增益系数 (需要实机微调)
+            #         ctrl_data["cmd"][2] += (v_x * yaw_comp_factor)
+            # ===============================================
 
         # get obs for policy & ext for mujoco
         obs, extras = self.policy.get_observation(env_data, ctrl_data)
