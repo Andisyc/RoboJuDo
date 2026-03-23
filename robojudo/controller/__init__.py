@@ -28,6 +28,7 @@ def __getattr__(name: str) -> type[Controller]:
 
 # ===== Declare all your custom controllers here =====
 ctrl_registry.add("JoystickCtrl", ".joystick_ctrl")
+ctrl_registry.add("RosCtrl", ".ros_ctrl")
 ctrl_registry.add("UnitreeCtrl", ".unitree_ctrl")
 ctrl_registry.add("KeyboardCtrl", ".keyboard_ctrl")
 ctrl_registry.add("BeyondMimicCtrl", ".beyondmimic_ctrl")

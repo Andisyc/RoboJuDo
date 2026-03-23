@@ -47,6 +47,19 @@ class JoystickCtrlCfg(CtrlCfg):
     }
 
 
+class RosCtrlCfg(CtrlCfg):
+    ctrl_type: str = "RosCtrl"
+    combination_init_buttons: list[str] = ["LB", "RB"]
+    """first button in combination, need to be held down to trigger other commands;"""
+
+    triggers: dict[str, str] = {
+        "A": "[SHUTDOWN]",
+        "X": "[MOTION_FADE_IN]",
+        "B": "[MOTION_FADE_OUT]",
+        "Y": "[MOTION_RESET]",
+    }
+
+
 class UnitreeCtrlCfg(JoystickCtrlCfg):
     ctrl_type: str = "UnitreeCtrl"
 
