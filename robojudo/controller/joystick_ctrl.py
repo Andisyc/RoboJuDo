@@ -26,7 +26,7 @@ class JoystickCtrl(Controller):
 
         self.axes_names = self.joystick_thread.config["axis_config"]["axis_map"].keys()
 
-        self.control_mode = 'local'
+        # self.control_mode = 'local'
         
         # ========= ROS2 Subscriber =========
 
@@ -134,33 +134,41 @@ class JoystickCtrl(Controller):
 
     def get_data(self):
         # Always get physical events to check for mode switch
+
+        state = self.get_state()
+        # Always get physical events to check for mode switch
         events = self.get_events()
+
+        return {
+            "axes": state["axes"],
+            "button_event": events,
+        }
 
         # ========= ROS2 Subscriber =========
 
         # self._update_control_mode(events)
 
-        # ========= ROS2 Subscriber =========
+        # if self.control_mode == 'ros':
+        #     # Use ROS command if available and recent, otherwise return empty/default
+        #     if self.last_ros_cmd and (time.time() - self.last_ros_cmd_time < 0.5):
+        #         # We still want to pass through the physical button events so we can toggle back
+        #         ros_cmd = self.last_ros_cmd.copy()
+        #         ros_cmd['button_event'] = events  # Use physical events for toggling
+        #         return ros_cmd
+        #     else:
+        #         # ROS is the mode, but no data is coming in. Return a safe, neutral state.
+        #         return {
+        #             "axes": {name: 0.0 for name in self.axes_names},
+        #             "button_event": events,
+        #         }
+        # else:  # 'local' control
+        #     state = self.get_state()
+        #     return {
+        #         "axes": state["axes"],
+        #         "button_event": events,
+        #     }
 
-        if self.control_mode == 'ros':
-            # Use ROS command if available and recent, otherwise return empty/default
-            if self.last_ros_cmd and (time.time() - self.last_ros_cmd_time < 0.5):
-                # We still want to pass through the physical button events so we can toggle back
-                ros_cmd = self.last_ros_cmd.copy()
-                ros_cmd['button_event'] = events  # Use physical events for toggling
-                return ros_cmd
-            else:
-                # ROS is the mode, but no data is coming in. Return a safe, neutral state.
-                return {
-                    "axes": {name: 0.0 for name in self.axes_names},
-                    "button_event": events,
-                }
-        else:  # 'local' control
-            state = self.get_state()
-            return {
-                "axes": state["axes"],
-                "button_event": events,
-            }
+        # ========= ROS2 Subscriber =========
 
 
     def process_triggers(self, ctrl_data):

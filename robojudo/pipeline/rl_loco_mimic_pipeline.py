@@ -351,27 +351,27 @@ class RlLocoMimicPipeline(RlMultiPolicyPipeline):
         # if current policy is loco
         if self.policy_manager.current_policy_id == self.policy_manager.policy_loco_id:
             # === [终极方案: 动态锚点过渡 (Dynamic Default Pos)] ===
-            # 尝试获取当前的前向速度指令 v_x
-            v_x = 0.0
-            if "cmd" in ctrl_data:
-                v_x = float(ctrl_data["cmd"][0])
-            elif "command" in ctrl_data:
-                v_x = float(ctrl_data["command"][0])
+            # # 尝试获取当前的前向速度指令 v_x
+            # v_x = 0.0
+            # if "cmd" in ctrl_data:
+            #     v_x = float(ctrl_data["cmd"][0])
+            # elif "command" in ctrl_data:
+            #     v_x = float(ctrl_data["command"][0])
 
-            # 定义右腿 Hip Pitch 的静态(原地)值和动态(快走)值
-            # 注意：这需要与你 cfg 中的 default_pos 对应
-            static_right_pitch = -0.08  # 你测出的原地完美值
-            dynamic_right_pitch = -0.10 # 官方原版对称值 (释放步幅)
+            # # 定义右腿 Hip Pitch 的静态(原地)值和动态(快走)值
+            # # 注意：这需要与你 cfg 中的 default_pos 对应
+            # static_right_pitch = -0.08  # 你测出的原地完美值
+            # dynamic_right_pitch = -0.10 # 官方原版对称值 (释放步幅)
 
-            # 计算混合比例 blend (0.0 到 1.0)
-            # 假设 v_x 超过 0.5 m/s 时，完全恢复到对称状态
-            blend = min(abs(v_x) / 0.5, 1.0) 
+            # # 计算混合比例 blend (0.0 到 1.0)
+            # # 假设 v_x 超过 0.5 m/s 时，完全恢复到对称状态
+            # blend = min(abs(v_x) / 0.5, 1.0) 
 
-            # 动态计算当前的 Right Hip Pitch
-            current_right_pitch = (1 - blend) * static_right_pitch + blend * dynamic_right_pitch
+            # # 动态计算当前的 Right Hip Pitch
+            # current_right_pitch = (1 - blend) * static_right_pitch + blend * dynamic_right_pitch
 
-            # 注入到 override_dof_pos 中 (根据 asap 顺序，右腿 Hip Pitch 是第 6 个元素)
-            self.policy_manager.override_dof_pos[6] = current_right_pitch
+            # # 注入到 override_dof_pos 中 (根据 asap 顺序，右腿 Hip Pitch 是第 6 个元素)
+            # self.policy_manager.override_dof_pos[6] = current_right_pitch
             # =====================================================
 
             ctrl_data["ref_dof_pos"] = self.policy.obs_adapter.fit(self.policy_manager.override_dof_pos)
