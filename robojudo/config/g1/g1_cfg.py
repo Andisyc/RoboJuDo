@@ -234,9 +234,9 @@ class g1_locomimic(RlLocoMimicPipelineCfg): # Sim2Sim
         ),
     ]
 
-    loco_policy: G1UnitreePolicyCfg = G1UnitreePolicyCfg()
+    # loco_policy: G1UnitreePolicyCfg = G1UnitreePolicyCfg()
     # loco_policy: G1UnitreeWoGaitPolicyCfg = G1UnitreeWoGaitPolicyCfg()
-    # loco_policy: G1AsapLocoPolicyCfg = G1AsapLocoPolicyCfg()
+    loco_policy: G1AsapLocoPolicyCfg = G1AsapLocoPolicyCfg()
 
     mimic_policies: list[G1BeyondMimicPolicyCfg] = [
         # G1BeyondMimicPolicyCfg(policy_name="wave-single-2-lz", without_state_estimator=False, max_timestep=400),

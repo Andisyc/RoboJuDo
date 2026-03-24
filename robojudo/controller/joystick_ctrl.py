@@ -177,7 +177,8 @@ class JoystickCtrl(Controller):
             return ctrl_data, commands
 
         # Create a copy to avoid modifying list while iterating
-        for event in list(ctrl_data["button_event"]):
+        for event in ctrl_data["button_event"]:
+        # for event in list(ctrl_data["button_event"]):
             if event["type"] == "button":
                 if event["name"] in self.combination_init_buttons:
                     if event["pressed"]:
@@ -194,9 +195,10 @@ class JoystickCtrl(Controller):
                             command = self.triggers.get(event_combination, None)
                         if command is not None:
                             commands.append(command)
+                            ctrl_data["button_event"].remove(event)
                             # remove event after triggered
-                            if event in ctrl_data["button_event"]:
-                                ctrl_data["button_event"].remove(event)
+                            # if event in ctrl_data["button_event"]:
+                            #     ctrl_data["button_event"].remove(event)
 
         return ctrl_data, commands
 
