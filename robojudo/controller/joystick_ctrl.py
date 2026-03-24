@@ -195,7 +195,7 @@ class JoystickCtrl(Controller):
                             command = self.triggers.get(event_combination, None)
                         if command is not None:
                             commands.append(command)
-                            ctrl_data["button_event"].remove(event)
+                            # ctrl_data["button_event"].remove(event)
                             # remove event after triggered
                             # if event in ctrl_data["button_event"]:
                             #     ctrl_data["button_event"].remove(event)
