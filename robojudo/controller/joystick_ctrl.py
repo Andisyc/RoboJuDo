@@ -3,8 +3,8 @@ from queue import Empty, Queue
 import json
 from threading import Thread
 
-import rclpy
-from rclpy.node import Node
+# import rclpy
+# from rclpy.node import Node
 from std_msgs.msg import String
 
 from robojudo.controller import Controller, ctrl_registry
@@ -25,36 +25,42 @@ class JoystickCtrl(Controller):
         self.joystick_thread.start()
 
         self.axes_names = self.joystick_thread.config["axis_config"]["axis_map"].keys()
-        
-        # ROS2 and mode switching setup
-        self.control_mode = 'local'  # 'local' or 'ros'
-        self.last_ros_cmd_time = 0
-        self.last_ros_cmd = None
-        self.toggle_buttons = {'Back', 'Start'}  # Use Back+Start to toggle
-        self.active_toggle_buttons = set()
-        self.toggle_debounce = False  # True if combo is pressed, to prevent rapid switching
 
-        self.init_ros()
+        self.control_mode = 'local'
+        
+        # ========= ROS2 Subscriber =========
+
+        # # ROS2 and mode switching setup
+        # self.control_mode = 'local'  # 'local' or 'ros'
+        # self.last_ros_cmd_time = 0
+        # self.last_ros_cmd = None
+        # self.toggle_buttons = {'Back', 'Start'}  # Use Back+Start to toggle
+        # self.active_toggle_buttons = set()
+        # self.toggle_debounce = False  # True if combo is pressed, to prevent rapid switching
+
+        # self.init_ros()
+
+        # ========= ROS2 Subscriber =========
         
         self.reset()
 
-    def init_ros(self):
-        """Initializes the ROS2 node and subscriber in a separate thread."""
-        try:
-            rclpy.init()
-            self.ros_node = Node('joystick_ctrl_subscriber')
-            self.ros_sub = self.ros_node.create_subscription(
-                String,
-                '/agent/joy_cmd_json',
-                self._ros_cmd_callback,
-                10)
+    # def init_ros(self):
+    #     """Initializes the ROS2 node and subscriber in a separate thread."""
+    #     try:
+    #         rclpy.init()
+    #         self.ros_node = Node('joystick_ctrl_subscriber')
+    #         self.ros_sub = self.ros_node.create_subscription(
+    #             String,
+    #             '/agent/joy_cmd_json',
+    #             self._ros_cmd_callback,
+    #             10)
             
-            self.ros_thread = Thread(target=rclpy.spin, args=(self.ros_node,), daemon=True)
-            self.ros_thread.start()
-            print("[JoystickCtrl] ROS2 subscriber initialized for /agent/joy_cmd_json.")
-        except Exception as e:
-            # This can happen if rclpy.init() is called elsewhere. Assume it's handled.
-            print(f"[JoystickCtrl] ROS2 initialization skipped or failed: {e}")
+    #         self.ros_thread = Thread(target=rclpy.spin, args=(self.ros_node,), daemon=True)
+    #         self.ros_thread.start()
+    #         print("[JoystickCtrl] ROS2 subscriber initialized for /agent/joy_cmd_json.")
+    #     except Exception as e:
+    #         # This can happen if rclpy.init() is called elsewhere. Assume it's handled.
+    #         print(f"[JoystickCtrl] ROS2 initialization skipped or failed: {e}")
 
     def _ros_cmd_callback(self, msg):
         """Callback for receiving ROS2 commands."""
@@ -129,7 +135,12 @@ class JoystickCtrl(Controller):
     def get_data(self):
         # Always get physical events to check for mode switch
         events = self.get_events()
-        self._update_control_mode(events)
+
+        # ========= ROS2 Subscriber =========
+
+        # self._update_control_mode(events)
+
+        # ========= ROS2 Subscriber =========
 
         if self.control_mode == 'ros':
             # Use ROS command if available and recent, otherwise return empty/default
@@ -150,6 +161,7 @@ class JoystickCtrl(Controller):
                 "axes": state["axes"],
                 "button_event": events,
             }
+
 
     def process_triggers(self, ctrl_data):
         commands = []
