@@ -226,15 +226,27 @@ class AsapLocoPolicy(Policy):
         self.timestep += 1
 
     def _get_obs_phase_time(self):
+
+        print(f"\n _get_obs_phase_time \n")
+        
         cur_time = time.time() * self.stand_command[0]
+
+        print(f"\n cur_time: {cur_time}, self.stand_command[0]: {self.stand_command[0]}\n")
+
         phase_time = cur_time % self.gait_period / self.gait_period
         return np.array([phase_time])
 
     def _get_obs_history(self):
+
+        print(f"\n _get_obs_history \n")
+
         history_list = [np.concatenate(items, axis=0) for items in zip(*self.history_buf, strict=True)]
         return np.concatenate(history_list, axis=0)
 
     def get_observation(self, env_data, ctrl_data):
+
+        print(f"\n get_observation \n")
+
         self._update_commands(ctrl_data)
 
         base_quat = env_data.base_quat  # [x, y, z, w]
@@ -302,6 +314,9 @@ class AsapLocoPolicy(Policy):
         return obs, extras
 
     def get_action(self, obs: np.ndarray) -> np.ndarray:
+
+        print(f"\n get_action \n")
+
         ort_inputs = {
             "actor_obs": np.expand_dims(obs, axis=0).astype(np.float32),
         }
@@ -325,6 +340,9 @@ class AsapLocoPolicy(Policy):
         return processed_actions
 
     def _update_commands(self, ctrl_data):
+        
+        print(f"\n _update_commands \n")
+
         if (ref_dof_pos := ctrl_data.get("ref_dof_pos", None)) is not None:
             self.ref_upper_dof_pos = ref_dof_pos.copy()[-self.num_upper_dofs :]
         for key in ctrl_data.keys():
@@ -342,6 +360,9 @@ class AsapLocoPolicy(Policy):
                         match event["name"]:
                             case "Left":
                                 self.stand_command = 1 - self.stand_command
+
+                                print(f"\n _update_commands, self.stand_command: {self.stand_command}\n")
+
                                 if self.stand_command == 0:
                                     self.ang_vel_command[0] = 0.0
                                     self.lin_vel_command[0] = 0.0
