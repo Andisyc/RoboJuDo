@@ -205,6 +205,19 @@ class g1_locomimic(RlLocoMimicPipelineCfg): # Sim2Sim
     #     ),
     # ]
 
+    # ctrl: List[Union[KeyboardCtrlCfg]] = [
+    #     KeyboardCtrlCfg(
+    #         triggers_extra={
+    #             "i": "[SIM_REBORN]",
+    #             "o": "[SHUTDOWN]",
+    #             "]": "[POLICY_LOCO]",
+    #             "[": "[POLICY_MIMIC]",
+    #             ";": "[POLICY_SWITCH],NEXT",
+    #             "'": "[POLICY_SWITCH],LAST",
+    #         }
+    #     ),
+    # ]
+
     # ctrl: List[Union[UnitreeCtrlCfg, JoystickCtrlCfg]] = [
     #     UnitreeCtrlCfg(),
     #     JoystickCtrlCfg(

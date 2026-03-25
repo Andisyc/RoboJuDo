@@ -99,7 +99,7 @@ class UnitreeWoGaitPolicyCfg(PolicyCfg):
         command: list[float] = [1.0, 1.0, 1.0]
 
     policy_type: str = "UnitreeWoGaitPolicy"
-    policy_name: str = "policy_wo_gait"
+    policy_name: str = 'Speed_Follow_DB' # "policy_wo_gait"
 
     @property
     def policy_file(self) -> str:

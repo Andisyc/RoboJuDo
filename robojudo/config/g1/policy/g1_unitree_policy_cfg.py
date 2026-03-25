@@ -112,7 +112,7 @@ class G1UnitreePolicyCfg(UnitreePolicyCfg):
 
 class G1UnitreeWoGaitPolicyCfg(UnitreeWoGaitPolicyCfg):
     robot: str = "g1"
-    policy_name: str = "policy_wo_gait"
+    policy_name: str = "Speed_Follow_DB" # "policy_wo_gait"
 
     obs_dof: DoFConfig = G1UnitreeWoGaitDoF()
     action_dof: DoFConfig = obs_dof

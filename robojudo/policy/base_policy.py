@@ -38,6 +38,7 @@ class Policy(ABC):
         else:
             policy_file = self.cfg_policy.policy_file
             logger.debug(f"Loading jit from {policy_file}...")
+            # print(f"\n policy_file: {policy_file} \n")
             self.model = torch.jit.load(policy_file, map_location=self.device)
 
         self.action_scale = self.cfg_policy.action_scale
