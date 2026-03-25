@@ -62,13 +62,13 @@ class JoystickCtrl(Controller):
     #         # This can happen if rclpy.init() is called elsewhere. Assume it's handled.
     #         print(f"[JoystickCtrl] ROS2 initialization skipped or failed: {e}")
 
-    def _ros_cmd_callback(self, msg):
-        """Callback for receiving ROS2 commands."""
-        try:
-            self.last_ros_cmd = json.loads(msg.data)
-            self.last_ros_cmd_time = time.time()
-        except json.JSONDecodeError:
-            self.ros_node.get_logger().error("Failed to decode JSON from /agent/joy_cmd_json")
+    # def _ros_cmd_callback(self, msg):
+    #     """Callback for receiving ROS2 commands."""
+    #     try:
+    #         self.last_ros_cmd = json.loads(msg.data)
+    #         self.last_ros_cmd_time = time.time()
+    #     except json.JSONDecodeError:
+    #         self.ros_node.get_logger().error("Failed to decode JSON from /agent/joy_cmd_json")
 
     def reset(self):
         self.combination_init_buttons = self.cfg_ctrl.combination_init_buttons
@@ -110,27 +110,27 @@ class JoystickCtrl(Controller):
                 break
         return events
 
-    def _update_control_mode(self, events):
-        """Checks for button combination to toggle control mode."""
-        for event in events:
-            if event['type'] == 'button' and event['name'] in self.toggle_buttons:
-                if event['pressed']:
-                    self.active_toggle_buttons.add(event['name'])
-                else:
-                    self.active_toggle_buttons.discard(event['name'])
+    # def _update_control_mode(self, events):
+    #     """Checks for button combination to toggle control mode."""
+    #     for event in events:
+    #         if event['type'] == 'button' and event['name'] in self.toggle_buttons:
+    #             if event['pressed']:
+    #                 self.active_toggle_buttons.add(event['name'])
+    #             else:
+    #                 self.active_toggle_buttons.discard(event['name'])
         
-        # Check if the toggle condition is met
-        if self.active_toggle_buttons == self.toggle_buttons:
-            if not self.toggle_debounce:
-                if self.control_mode == 'local':
-                    self.control_mode = 'ros'
-                    print("\n[JoystickCtrl] Switched to ROS control mode.")
-                else:
-                    self.control_mode = 'local'
-                    print("\n[JoystickCtrl] Switched to Local Joystick control mode.")
-                self.toggle_debounce = True  # Prevent re-toggling until buttons are released
-        else:
-            self.toggle_debounce = False  # Reset debounce when buttons are no longer held
+    #     # Check if the toggle condition is met
+    #     if self.active_toggle_buttons == self.toggle_buttons:
+    #         if not self.toggle_debounce:
+    #             if self.control_mode == 'local':
+    #                 self.control_mode = 'ros'
+    #                 print("\n[JoystickCtrl] Switched to ROS control mode.")
+    #             else:
+    #                 self.control_mode = 'local'
+    #                 print("\n[JoystickCtrl] Switched to Local Joystick control mode.")
+    #             self.toggle_debounce = True  # Prevent re-toggling until buttons are released
+    #     else:
+    #         self.toggle_debounce = False  # Reset debounce when buttons are no longer held
 
     def get_data(self):
         # Always get physical events to check for mode switch
@@ -195,7 +195,7 @@ class JoystickCtrl(Controller):
                             command = self.triggers.get(event_combination, None)
                         if command is not None:
                             commands.append(command)
-                            # ctrl_data["button_event"].remove(event)
+                            ctrl_data["button_event"].remove(event)
                             # remove event after triggered
                             # if event in ctrl_data["button_event"]:
                             #     ctrl_data["button_event"].remove(event)
