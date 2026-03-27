@@ -326,10 +326,6 @@ class RlPipeline(Pipeline):
 
             t3 = time.perf_counter()
 
-            # print("\n")
-            # print(f"action.device: {action.device}") # np.ndarry
-            # print("\n")
-
             # send motor mixup action
             self.env.step(action)
 

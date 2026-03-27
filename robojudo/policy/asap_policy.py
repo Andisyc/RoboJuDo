@@ -226,29 +226,17 @@ class AsapLocoPolicy(Policy):
         self.timestep += 1
 
     def _get_obs_phase_time(self):
-
-        # print(f"\n _get_obs_phase_time \n")
-        
         cur_time = time.time() * self.stand_command[0]
-
-        print(f"\n cur_time: {cur_time}, self.stand_command[0]: {self.stand_command[0]}\n")
-
         phase_time = cur_time % self.gait_period / self.gait_period
-
-        print(f"\n phase_time: {phase_time} \n")
 
         return np.array([phase_time])
 
     def _get_obs_history(self):
 
-        print(f"\n _get_obs_history \n")
-
         history_list = [np.concatenate(items, axis=0) for items in zip(*self.history_buf, strict=True)]
         return np.concatenate(history_list, axis=0)
 
     def get_observation(self, env_data, ctrl_data):
-
-        # print(f"\n get_observation \n")
 
         self._update_commands(ctrl_data)
 
@@ -318,8 +306,6 @@ class AsapLocoPolicy(Policy):
 
     def get_action(self, obs: np.ndarray) -> np.ndarray:
 
-        # print(f"\n get_action \n")
-
         ort_inputs = {
             "actor_obs": np.expand_dims(obs, axis=0).astype(np.float32),
         }
@@ -329,8 +315,6 @@ class AsapLocoPolicy(Policy):
             ort_inputs,
         )
         actions: np.ndarray = np.asarray(ort_outputs[0]).squeeze()
-
-        print(f"\n actions: {actions} \n")
 
         processed_actions = actions
         if self.action_clip is not None:
@@ -346,8 +330,6 @@ class AsapLocoPolicy(Policy):
         return processed_actions
 
     def _update_commands(self, ctrl_data):
-        
-        # print(f"\n _update_commands \n")
 
         if (ref_dof_pos := ctrl_data.get("ref_dof_pos", None)) is not None:
             self.ref_upper_dof_pos = ref_dof_pos.copy()[-self.num_upper_dofs :]
@@ -363,12 +345,9 @@ class AsapLocoPolicy(Policy):
                 button_event = ctrl_data[key]["button_event"]
                 for event in button_event:
                     if event["type"] == "button" and event["pressed"]:
-                        print(f"\n event: {event} \n")
                         match event["name"]:
                             case "Left":
                                 self.stand_command = 1 - self.stand_command
-
-                                # print(f"\n _update_commands, self.stand_command: {self.stand_command}\n")
 
                                 if self.stand_command == 0:
                                     self.ang_vel_command[0] = 0.0
