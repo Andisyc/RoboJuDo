@@ -48,7 +48,7 @@ class PolicyWrapper: # A wrapper for Policy to handle observation and action ada
 
     def get_pd_target(self, obs):
         action = self.policy.get_action(obs)
-        pd_target = action + self.policy.default_pos
+        pd_target = action + self.policy.default_pos # action.shape=12, default_pos.shape=29
         return self.actions_adapter.fit(pd_target, template=self.env_dof_cfg.default_pos)
 
     def get_init_dof_pos(self):

@@ -44,6 +44,8 @@ class G1_29AsapDoF(DoFConfig):
         ],
     ]
 
+    # for observation compute: policy observed (real_pos - default_pos) * scale
+    # 如果default_pos过大会导致policy得到姿态严重偏离正常位置的结论, 疯狂输出纠正动作
     default_pos: list[float] | None = [
         # left leg: Hip [P, R, Y], Knee, Ankle [P, R]
         *[-0.1, 0.0, 0.0, 0.3, -0.2, 0.0],
@@ -56,20 +58,17 @@ class G1_29AsapDoF(DoFConfig):
         # K屈伸: 左右腿弯曲程度不一致会导致侧倾
         # AP勾脚: 某只脚无法前后放平会导致侧倾
         # AP撇脚: 某只脚无法左右放平会导致侧倾
-        *[-0.1, 0.0045, 0.0, 0.27, -0.2, 0.0],
+        # *[-0.1, 0.0045, 0.0, 0.27, -0.2, 0.0],
+        *[-0.1, 0.0, 0.0, 0.3, -0.2, 0.0],
 
         # Waist: [Y, R, P]
         *[0, 0, 0],
 
         # Left Arm: Shoulder [P, R, Y], Elbow, Wrist [R, P, Y]
-        # *[0.29, 0.22, -0.02, 0.99, 0.2, 0.03, -0.03],
-        *[0, 0, 0.52, -0.52, 0, 0, 0],
-        # *[0, 0, 0, 0, 0, 0, 0],
+        *[0, 0, 0, 0, 0, 0, 0],
 
         # Right Arm: Shoulder [P, R, Y], Elbow, Wrist [R, P, Y]
-        # *[0.29, -0.22, 0.02, 0.99, -0.2, 0.03, 0.03]]
-        *[0, 0, -0.52, -0.52, 0, 0, 0]]
-        # *[0, 0, 0, 0, 0, 0, 0]]
+        *[0, 0, 0, 0, 0, 0, 0]]
 
     stiffness: list[float] | None = [
         *[100, 100, 100, 200, 20, 20],
@@ -305,6 +304,8 @@ class G1AsapLocoPolicyCfg(AsapLocoPolicyCfg):
     GAIT_PERIOD: float = 0.8  # 1.25
 
     # ======= Default Command CONFIGURATION =======
+    # 生成控制指令观测的变量, 即期望的手臂位置
+    # 但RlPipeline似乎并无将期望位置转换成PD逻辑
     ref_upper_dof_pos_default: list[float] | None = [
         *[0.0, 0.0, 0.0],
         # *[0.0, 0.3, 0.0, 1.0, 0.0, 0.0, 0.0],
